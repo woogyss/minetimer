@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "password": "YWRtaW4xMjM=", 
+    "isAdmin": true
+  },
+  "user": {
+    "password": "dXNlcjEyMw==", 
+    "isAdmin": false
+  }
+}
