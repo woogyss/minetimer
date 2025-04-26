@@ -2,103 +2,444 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Таймеры и Чат</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Timers</title>
     <style>
-        /* Тут твои стили */
-        .timer { margin: 5px 0; }
-        .alert { color: red; }
-        .warning { color: orange; }
-        .active-container { display: block; }
-        #profileContainer { display: none; }
+        :root {
+            --bg-color: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee, #a1c4fd, #c2e9fb, #d4fc79);
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #333;
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --admin-btn-bg: #f39c12;
+            --admin-btn-hover: #e67e22;
+            --timer-border: #eee;
+            --warning-bg: #ffdddd;
+            --alert-bg: #ffcccc;
+            --chat-bg: #f5f5f5;
+            --chat-msg-bg: #e3f2fd;
+            --chat-own-msg-bg: #bbdefb;
+            --profile-btn: #6c757d;
+            --modal-bg: rgba(0,0,0,0.5);
+        }
+
+        .dark-theme {
+            --bg-color: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+            --container-bg: rgba(30, 30, 46, 0.9);
+            --text-color: #f0f0f0;
+            --button-bg: #2d7d46;
+            --button-hover: #1f5e36;
+            --admin-btn-bg: #d35400;
+            --admin-btn-hover: #a04000;
+            --timer-border: #444;
+            --warning-bg: #5c2e2e;
+            --alert-bg: #7a3737;
+            --chat-bg: #2a2a3a;
+            --chat-msg-bg: #3a3a4a;
+            --chat-own-msg-bg: #4a4a5a;
+            --profile-btn: #5a6268;
+            --modal-bg: rgba(0,0,0,0.7);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-color);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Форма входа */
+        .login-form {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            margin: 100px auto;
+        }
+
+        /* Основные контейнеры */
+        .main-container, .profile-container {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            gap: 20px;
+            position: relative;
+        }
+
+        .active-container {
+            display: flex;
+        }
+
+        /* Кнопка профиля */
+        .profile-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--profile-btn);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+            border: none;
+        }
+
+        /* Секция с таймерами */
+        .timers-section {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        /* Секция с чатом */
+        .chat-section {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Общие стили блоков */
+        .mine-timers, .chat-container, .profile-content {
+            background-color: var(--container-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            height: 100%;
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        input, button, select, textarea {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid var(--timer-border);
+            border-radius: 5px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        button {
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .regular-btn {
+            background-color: var(--button-bg);
+        }
+
+        .regular-btn:hover {
+            background-color: var(--button-hover);
+        }
+
+        .admin-btn {
+            background-color: var(--admin-btn-bg);
+            display: none;
+            margin-top: 10px;
+        }
+
+        .admin-btn:hover {
+            background-color: var(--admin-btn-hover);
+        }
+
+        /* Стили таймеров */
+        .timer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid var(--timer-border);
+            font-size: 0.9em;
+        }
+
+        .timer.warning {
+            background-color: var(--warning-bg);
+        }
+
+        .timer.alert {
+            background-color: var(--alert-bg);
+            font-weight: bold;
+        }
+
+        .timer-name {
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .timer-time {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* Стили чата */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding-bottom: 10px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: var(--chat-bg);
+            border-radius: 5px;
+            min-height: 120px;
+            max-height: 250px;
+        }
+
+        .message {
+            margin-bottom: 5px;
+            padding: 5px 8px;
+            border-radius: 10px;
+            background-color: var(--chat-msg-bg);
+            word-break: break-word;
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+
+        .own-message {
+            background-color: var(--chat-own-msg-bg);
+            margin-left: 15%;
+            border-bottom-right-radius: 5px;
+        }
+
+        .other-message {
+            margin-right: 15%;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-sender {
+            font-weight: bold;
+            color: #1a73e8;
+            font-size: 0.8em;
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 5px;
+            margin-top: 0;
+            padding-top: 5px;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            margin: 0;
+            padding: 6px;
+        }
+
+        .send-btn {
+            width: auto;
+            margin: 0;
+            padding: 6px 12px;
+        }
+
+        /* Стили профиля */
+        .profile-info {
+            margin-bottom: 20px;
+        }
+
+        .profile-info p {
+            margin: 10px 0;
+            padding: 8px;
+            background-color: var(--chat-bg);
+            border-radius: 5px;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .main-container, .profile-container {
+                flex-direction: column;
+            }
+
+            .timers-section, .chat-section {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .mine-timers, .chat-container, .profile-content {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            .login-form {
+                width: 90%;
+                margin: 50px auto;
+                padding: 20px;
+            }
+
+            .profile-btn {
+                top: 5px;
+                right: 5px;
+                width: 35px;
+                height: 35px;
+                font-size: 0.9em;
+            }
+            
+            .chat-messages {
+                max-height: 180px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="mainContainer" class="active-container">
-        <div id="timersContainer"></div>
-        <input id="chatInput" placeholder="Введите сообщение..." />
-        <div id="chatMessages"></div>
-        <button id="profileBtn">Профиль</button>
+        <!-- Основной интерфейс с чатами и таймерами -->
     </div>
 
-    <div id="profileContainer">
-        <div id="profileInfo"></div>
-        <button id="backBtn">Назад</button>
+    <div id="profileContainer" class="inactive-container">
+        <!-- Профиль пользователя -->
     </div>
 
     <!-- Модальные окна -->
-    <div id="createUserModal" style="display:none;">
-        <input id="newUsername" placeholder="Новый логин" />
-        <input id="newPassword" type="password" placeholder="Новый пароль" />
-        <button onclick="createUser()">Создать</button>
-        <button onclick="closeModal('createUserModal')">Отмена</button>
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <input type="text" id="newUsername" placeholder="Имя пользователя">
+            <input type="password" id="newPassword" placeholder="Пароль">
+            <button onclick="createUser()">Создать</button>
+            <button onclick="closeModal('createUserModal')">Закрыть</button>
+        </div>
     </div>
 
-    <div id="editTimersModal" style="display:none;">
-        <div id="timersEditContainer"></div>
-        <button onclick="saveTimersChanges()">Сохранить</button>
-        <button onclick="closeModal('editTimersModal')">Отмена</button>
+    <div id="editTimersModal" class="modal">
+        <div class="modal-content">
+            <div id="timersEditContainer"></div>
+            <button onclick="saveTimersChanges()">Сохранить изменения</button>
+            <button onclick="closeModal('editTimersModal')">Закрыть</button>
+        </div>
     </div>
+
+    <div id="timersContainer"></div>
+    <div id="chatMessages"></div>
+    <input type="text" id="chatInput" placeholder="Введите сообщение...">
 
     <script>
-        let mines = {};
-        let chatMessages = [];
-        let users = {};
         let currentUser = null;
+        const users = {};
+        const chatMessages = [];
+        const mines = {
+            'Мина 1': { max: 300, current: 300 },
+            'Мина 2': { max: 200, current: 200 },
+            // Добавьте другие мины здесь
+        };
 
-        // Функция SHA-256
-        async function sha256(message) {
+        // Функция для хеширования пароля с использованием SHA-256
+        async function hashPassword(password) {
             const encoder = new TextEncoder();
-            const data = encoder.encode(message);
+            const data = encoder.encode(password);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
+            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
         }
 
-        // Загрузка пользователей
-        async function loadInitialUsers() {
-            if (!localStorage.getItem('users')) {
-                users = {
-                    admin: {
-                        password: await sha256('admin'), // Стандартный пароль "admin"
-                        isAdmin: true
-                    }
-                };
-                saveUsers();
-            } else {
-                users = JSON.parse(localStorage.getItem('users'));
-            }
-        }
-
-        // Сохранение пользователей
-        function saveUsers() {
-            localStorage.setItem('users', JSON.stringify(users));
-        }
-
-        // Сохранение данных
+        // Сохранение данных (например, в локальное хранилище)
         function saveData() {
-            localStorage.setItem('mines', JSON.stringify(mines));
+            localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+            localStorage.setItem('mines', JSON.stringify(mines));
         }
 
         // Загрузка данных
         function loadData() {
-            if (localStorage.getItem('mines')) {
-                mines = JSON.parse(localStorage.getItem('mines'));
-            } else {
-                // Пример начальных данных
-                mines = {
-                    "Шахта 1": { max: 300, current: 300 },
-                    "Шахта 2": { max: 600, current: 600 }
-                };
+            const savedUsers = JSON.parse(localStorage.getItem('users'));
+            const savedMessages = JSON.parse(localStorage.getItem('chatMessages'));
+            const savedMines = JSON.parse(localStorage.getItem('mines'));
+
+            if (savedUsers) {
+                Object.assign(users, savedUsers);
+            }
+            if (savedMessages) {
+                chatMessages.length = 0;
+                chatMessages.push(...savedMessages);
+            }
+            if (savedMines) {
+                Object.assign(mines, savedMines);
             }
 
-            if (localStorage.getItem('chatMessages')) {
-                chatMessages = JSON.parse(localStorage.getItem('chatMessages'));
-            }
-
-            updateTimers();
             updateChat();
+            updateTimers();
+            updateProfileInfo();
+        }
+
+        // Загрузка пользователей при старте
+        async function loadInitialUsers() {
+            if (!Object.keys(users).length) {
+                users['admin'] = {
+                    password: await hashPassword('admin123'),
+                    isAdmin: true
+                };
+                users['user1'] = {
+                    password: await hashPassword('password1'),
+                    isAdmin: false
+                };
+                saveData();
+            }
         }
 
         // Обновление таймеров
@@ -110,6 +451,7 @@
                 const timerDiv = document.createElement('div');
                 timerDiv.className = 'timer';
 
+                // Подсветка если время заканчивается
                 if (data.current <= 20 && data.current > 0) {
                     timerDiv.classList.add('alert');
                 } else if (data.current <= 60) {
@@ -122,7 +464,7 @@
 
                 const timeSpan = document.createElement('span');
                 timeSpan.className = 'timer-time';
-                timeSpan.textContent = `${formatTime(data.current)} / ${formatTime(data.max)}`;
+                timeSpan.textContent = formatTime(data.current) + ' / ' + formatTime(data.max);
 
                 timerDiv.appendChild(nameSpan);
                 timerDiv.appendChild(timeSpan);
@@ -155,6 +497,7 @@
                 updateChat();
                 input.value = '';
 
+                // Прокрутка вниз
                 const chatContainer = document.getElementById('chatMessages');
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
@@ -168,7 +511,7 @@
             chatMessages.forEach(msg => {
                 const isOwn = currentUser && msg.sender === currentUser.username;
                 const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isOwn ? 'own-message' : 'other-message'}`;
+                messageDiv.className = isOwn ? 'own-message' : 'other-message';
 
                 const senderSpan = document.createElement('span');
                 senderSpan.className = 'message-sender';
@@ -188,6 +531,7 @@
                 container.appendChild(messageDiv);
             });
 
+            // Прокрутка вниз
             container.scrollTop = container.scrollHeight;
         }
 
@@ -197,7 +541,7 @@
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Обновление профиля
+        // Обновление информации в профиле
         function updateProfileInfo() {
             const container = document.getElementById('profileInfo');
             container.innerHTML = `
@@ -207,24 +551,28 @@
             `;
         }
 
+        // Показать экран профиля
         function showProfile() {
             document.getElementById('mainContainer').classList.remove('active-container');
             document.getElementById('profileContainer').classList.add('active-container');
         }
 
+        // Вернуться из профиля
         function backToMain() {
             document.getElementById('profileContainer').classList.remove('active-container');
             document.getElementById('mainContainer').classList.add('active-container');
         }
 
+        // Показать модальное окно создания пользователя
         function showCreateUserModal() {
             document.getElementById('newUsername').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('createUserModal').style.display = 'flex';
         }
 
+        // Создать нового пользователя
         async function createUser() {
-            const username = document.getElementById('newUsername').value.trim();
+            const username = document.getElementById('newUsername').value;
             const password = document.getElementById('newPassword').value;
 
             if (!username || !password) {
@@ -237,18 +585,19 @@
                 return;
             }
 
-            const hashedPassword = await sha256(password);
+            const hashedPassword = await hashPassword(password);
 
             users[username] = {
                 password: hashedPassword,
                 isAdmin: false
             };
 
-            saveUsers();
+            saveData();
             closeModal('createUserModal');
             alert(`Пользователь ${username} успешно создан!`);
         }
 
+        // Показать модальное окно редактирования таймеров
         function showEditTimersModal() {
             const container = document.getElementById('timersEditContainer');
             container.innerHTML = '';
@@ -278,6 +627,7 @@
             document.getElementById('editTimersModal').style.display = 'flex';
         }
 
+        // Сохранить изменения таймеров
         function saveTimersChanges() {
             const inputs = document.querySelectorAll('#timersEditContainer input');
 
@@ -287,6 +637,7 @@
 
                 if (newMax > 0) {
                     mines[mineName].max = newMax;
+                    // Сбросить текущее время до нового максимума
                     mines[mineName].current = newMax;
                 }
             });
@@ -296,10 +647,12 @@
             closeModal('editTimersModal');
         }
 
+        // Закрыть модальное окно
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
+        // Обработчики событий
         document.getElementById('chatInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
@@ -309,16 +662,18 @@
         document.getElementById('profileBtn').addEventListener('click', showProfile);
         document.getElementById('backBtn').addEventListener('click', backToMain);
 
+        // Автообновление таймеров
         setInterval(() => {
             let updated = false;
 
             for (const [name, data] of Object.entries(mines)) {
                 if (data.current > 0) {
-                    data.current--;
+                    mines[name].current--;
                     updated = true;
                 }
+
                 if (data.current <= 0) {
-                    data.current = data.max;
+                    mines[name].current = data.max;
                     updated = true;
                 }
             }
@@ -328,7 +683,8 @@
                 saveData();
             }
         }, 1000);
-//test
+
+        // Инициализация при загрузке страницы
         window.onload = async function() {
             await loadInitialUsers();
             loadData();
