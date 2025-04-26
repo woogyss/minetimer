@@ -1,10 +1,10 @@
 {
     "admin": {
-        "password": "YWRtaW4xMjM=",  // Base64 encoded password for "admin123"
+        "password": "YWRtaW4xMjM=",
         "isAdmin": true
     },
     "user": {
-        "password": "dXNlcjEyMw==",  // Base64 encoded password for "user123"
+        "password": "dXNlcjEyMw==",
         "isAdmin": false
     }
 }
