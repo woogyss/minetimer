@@ -459,18 +459,24 @@
             localStorage.setItem('mineTimerUsers', JSON.stringify(usersCopy));
         }
 
-        // Загрузка начальных данных пользователей из users.json
-        async function loadInitialUsers() {
-            try {
-                const response = await fetch('users.json');
-                const initialUsers = await response.json();
-                for (const user in initialUsers) {
-                    users[user] = initialUsers[user];
-                }
-                saveUsers(); // Сохраняем в localStorage с закодированными паролями
-            } catch (error) {
-                console.error('Ошибка при загрузке users.json:', error);
+        // Initial user data
+        const initialUsers = {
+            "admin": {
+                "password": "YWRtaW4xMjM=", 
+                "isAdmin": true
+            },
+            "user": {
+                "password": "dXNlcjEyMw==",
+                "isAdmin": false
             }
+        };
+
+        // Function to load initial users
+        function loadInitialUsers() {
+            for (const user in initialUsers) {
+                users[user] = initialUsers[user];
+            }
+            saveUsers(); // Save to localStorage with encoded passwords
         }
 
         // Текущий пользователь
@@ -805,9 +811,8 @@
 
         // Инициализация при загрузке страницы
         window.onload = function() {
-            loadInitialUsers().then(() => {
-                loadData();
-            });
+            loadInitialUsers();
+            loadData();
         };
     </script>
 </body>
