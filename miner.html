@@ -20,7 +20,7 @@
             --chat-msg-bg: #e3f2fd;
             --chat-own-msg-bg: #bbdefb;
             --profile-btn: #6c757d;
-            --modal-bg: rgba(0,0,0,0.5);
+            --modal-bg: rgba(0, 0, 0, 0.5);
         }
 
         .dark-theme {
@@ -38,7 +38,7 @@
             --chat-msg-bg: #3a3a4a;
             --chat-own-msg-bg: #4a4a5a;
             --profile-btn: #5a6268;
-            --modal-bg: rgba(0,0,0,0.7);
+            --modal-bg: rgba(0, 0, 0, 0.7);
         }
 
         body {
@@ -459,22 +459,25 @@
             localStorage.setItem('mineTimerUsers', JSON.stringify(usersCopy));
         }
 
-        // Initial user data
-        const initialUsers = {
-            "admin": {
-                "password": "YWRtaW4xMjM=", 
-                "isAdmin": true
-            },
-            "user": {
-                "password": "dXNlcjEyMw==",
-                "isAdmin": false
-            }
-        };
-
-        // Function to load initial users
+        // Function to load initial users from the JSONP endpoint
         function loadInitialUsers() {
-            for (const user in initialUsers) {
-                users[user] = initialUsers[user];
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://<ваш-репозиторий>.github.io/users.json?callback=handleUsersData';
+                script.onload = () => {
+                    resolve();
+                };
+                script.onerror = () => {
+                    reject(new Error('Failed to load users data'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // Callback function to handle the JSONP response
+        function handleUsersData(data) {
+            for (const user in data) {
+                users[user] = data[user];
             }
             saveUsers(); // Save to localStorage with encoded passwords
         }
@@ -810,8 +813,8 @@
         }, 1000);
 
         // Инициализация при загрузке страницы
-        window.onload = function() {
-            loadInitialUsers();
+        window.onload = async function() {
+            await loadInitialUsers();
             loadData();
         };
     </script>
