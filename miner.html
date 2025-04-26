@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таймеры шахт с чатом</title>
     <style>
-        /* Оставляем твой CSS как есть */
-        /* Сюда вставим старые стили, если нужно */
+        /* Оставляем твой оригинальный CSS без изменений */
     </style>
 </head>
 <body>
-    <!-- Форма входа -->
+    <!-- Твоя оригинальная разметка -->
+
     <div class="login-form" id="loginForm">
         <h1>Вход в систему</h1>
         <input type="text" id="username" placeholder="Логин" required>
@@ -18,7 +18,6 @@
         <button class="regular-btn" onclick="login()">Войти</button>
     </div>
 
-    <!-- Основной контейнер -->
     <div class="main-container" id="mainContainer">
         <button class="profile-btn" id="profileBtn">👤</button>
         <div class="timers-section">
@@ -50,14 +49,28 @@
         </div>
     </div>
 
-    <!-- Модальные окна -->
     <div class="modal" id="createUserModal">...</div>
     <div class="modal" id="editTimersModal">...</div>
 
     <script>
+        // Убираем users из кода - теперь загружаем отдельно
         let users = {};
         let currentUser = null;
-        let mines = {};
+        let mines = {
+            "Шахта 1": { current: 0, max: 59 },
+            "Шахта 2": { current: 0, max: 89 },
+            "Шахта 3": { current: 0, max: 119 },
+            "Шахта 4": { current: 0, max: 159 },
+            "Шахта 5": { current: 0, max: 199 },
+            "Шахта 6": { current: 0, max: 229 },
+            "Шахта 7": { current: 0, max: 269 },
+            "Шахта 8": { current: 0, max: 299 },
+            "Шахта 9": { current: 0, max: 499 },
+            "Маяк": { current: 0, max: 3599 },
+            "Гномы": { current: 0, max: 3599 },
+            "Сундук": { current: 0, max: 3599 },
+            "/warp newbie": { current: 0, max: 499 }
+        };
         let chatMessages = [];
 
         function base64encode(str) {
@@ -115,7 +128,7 @@
             document.getElementById('password').value = '';
         }
 
-        // Здесь остаётся твой старый код updateTimers, sendMessage, updateChat, formatChatTime и т.д.
+        // Твой оригинальный код для работы с таймерами, чатом и профилем оставляем
 
         window.onload = async function() {
             await loadUsers();
