@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Mine Timer Menu</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <style>
+        /* Background Image */
+        body {
+            font-family: Arial, sans-serif;
+            background: url("{{ url_for('static', filename='images/фон.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 5rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px #FF8C00, 0 0 10px #FFD700, 0 0 20px #FF4500;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        /* Container for timers */
+        #mines {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 20px;
+            max-width: 1900px; /* Увеличен размер контейнера для всех шахт */
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        /* Timer design */
+        .mine {
+            color: #FFD700;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #FFD700; /* Рамка вокруг каждого блока шахты */
+            border-radius: 10px;
+        }
+
+        .mine h2 {
+            font-size: 1.2rem;
+            margin: 0 0 10px;
+            padding: 5px;
+            border: 2px solid #FFD700; /* Рамка вокруг названия шахты */
+            border-radius: 5px;
+            width: 100%;
+            background-color: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+
+        /* Dial (clock face) container */
+        .dial-container {
+            background: url("{{ url_for('static', filename='images/циферблат.png') }}") no-repeat center;
+            background-size: 300px 300px; /* Увеличен размер циферблата */
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .time-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6495ED; /* Более темный светло-синий цвет для лучшей видимости */
+        }
+
+        .max-time-display {
+            font-size: 0.8rem; /* Размер текста меньше, чем у текущего времени */
+            color: #6495ED; /* Светло-синий цвет для максимального значения */
+            margin-top: 5px; /* Отступ, чтобы разместить ниже текущего времени */
+        }
+
+        /* Input fields and buttons container */
+        .inputs-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .inputs-container input {
+            width: 60px; /* Уменьшен размер полей ввода */
+            padding: 4px;
+            text-align: center;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #FFD700;
+            border: none;
+        }
+
+        /* Buttons container */
+        .buttons-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .buttons-container button {
+            background-color: #FFD700;
+            color: #333;
+            border: none;
+            padding: 4px 8px; /* Уменьшен размер кнопок */
+            border-radius: 5px;
+            cursor: pointer;
+            width: 70px;
+        }
+
+        .buttons-container button:hover {
+            background-color: #FFA500;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mine Timer Menu</h1>
+    <div id="mines">
+        <!-- Mines will be dynamically populated here by JavaScript -->
+    </div>
+</body>
+</html>

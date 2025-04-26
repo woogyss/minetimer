@@ -1,0 +1,78 @@
+function updateCounters() {
+    $.getJSON("/get_mine_data", function(data) {
+        $("#mines").empty();
+        data.forEach((mine, index) => {
+            const mineName = index < 11 ? `Шахта ${index + 1}` :
+                             index === 11 ? "Мистик" :
+                             index === 12 ? "Маяк" : "Начальная шахта";
+
+            $("#mines").append(`
+                <div class="mine">
+                    <h2>${mineName}</h2>
+                    <div class="time-display" id="current_${index}">${formatTime(mine.current)}</div>
+                    <div class="controls">
+                        <input type="number" id="input_${index}" placeholder="Новое значение" min="0" max="${mine.maximum}">
+                        <button onclick="updateMine(${index})">Обновить</button>
+                        <input type="number" id="max_input_${index}" placeholder="Макс. значение" min="0">
+                        <button onclick="updateMaxValue(${index})">Макс. обновить</button>
+                    </div>
+                </div>
+            `);
+        });
+    });
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateMine(mineId) {
+    const newCurrent = $(`#input_${mineId}`).val();
+    if (newCurrent) {
+        $.ajax({
+            url: "/update_mine",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ mine_id: mineId, current: newCurrent }),
+            success: function(response) {
+                if (response.status === "success") {
+                    updateCounters();
+                } else {
+                    alert(`Ошибка: ${response.message}`);
+                }
+            }
+        });
+    }
+}
+
+function updateMaxValue(mineId) {
+    const newMax = $(`#max_input_${mineId}`).val();
+    if (newMax) {
+        $.ajax({
+            url: "/update_max_value",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ mine_id: mineId, maximum: newMax }),
+            success: function(response) {
+                if (response.status === "success") {
+                    updateCounters();
+                } else {
+                    alert(`Ошибка: ${response.message}`);
+                }
+            }
+        });
+    }
+}
+
+$(document).ready(function() {
+    updateCounters();
+    setInterval(() => {
+        $.getJSON("/get_mine_data", function(data) {
+            data.forEach((mine, index) => {
+                $(`#current_${index}`).text(formatTime(mine.current));
+            });
+        });
+    }, 1000);
+});

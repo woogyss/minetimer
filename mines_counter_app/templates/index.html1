@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Mine Timer Menu</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <style>
+        /* General layout */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #7ec8e3, #f1f1f1);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Container for timers */
+        #mines {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 1000px;
+        }
+
+        /* Timer design */
+        .mine {
+            background-color: #333;
+            color: #f4f4f9;
+            border-radius: 50%;
+            padding: 10px;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .mine h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .time-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Style for buttons and inputs */
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .controls input {
+            width: 60px;
+            padding: 5px;
+            margin-top: 5px;
+            text-align: center;
+            border: none;
+            border-radius: 4px;
+        }
+        .controls button {
+            background-color: #FFD700;
+            color: #333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .controls button:hover {
+            background-color: #FFA500;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mine Timer Menu</h1>
+    <div id="mines">
+        <!-- Mines will be dynamically populated here by JavaScript -->
+    </div>
+</body>
+</html>
