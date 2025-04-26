@@ -349,13 +349,57 @@
     </style>
 </head>
 <body>
-    <div id="mainContainer" class="active-container">
-        <!-- Основной интерфейс с чатами и таймерами -->
+    <!-- Форма входа -->
+    <div class="login-form" id="loginForm">
+        <h1>Вход в систему</h1>
+        <input type="text" id="username" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button class="regular-btn" onclick="login()">Войти</button>
     </div>
 
-    <div id="profileContainer" class="inactive-container">
-        <!-- Профиль пользователя -->
+    <!-- Основной контейнер (таймеры + чат) -->
+    <div class="main-container" id="mainContainer">
+        <!-- Кнопка профиля -->
+        <button class="profile-btn" id="profileBtn">👤</button>
+
+        <!-- Секция с таймерами -->
+        <div class="timers-section">
+            <div class="mine-timers" id="mineTimers">
+                <h1>Таймеры шахт</h1>
+                <div id="timersContainer"></div>
+            </div>
+        </div>
+
+        <!-- Секция с чатом -->
+        <div class="chat-section">
+            <div class="chat-container">
+                <h1>Чат</h1>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Сообщение..." autocomplete="off">
+                    <button class="send-btn regular-btn" onclick="sendMessage()">➤</button>
+                </div>
+                <!-- Кнопка создания пользователя (только для админов) -->
+                <button class="admin-btn" id="createUserBtn" onclick="showCreateUserModal()">Создать пользователя</button>
+                <!-- Кнопка админа (только для админов) -->
+                <button class="admin-btn" id="adminControlsBtn" onclick="showEditTimersModal()">Редактировать таймеры</button>
+            </div>
+        </div>
     </div>
+
+    <!-- Контейнер профиля -->
+    <div class="profile-container" id="profileContainer">
+        <button class="profile-btn" id="backBtn">←</button>
+
+        <div class="profile-content">
+            <h1>Профиль</h1>
+            <div class="profile-info" id="profileInfo">
+                <!-- Информация о пользователе будет здесь -->
+            </div>
+            <button class="regular-btn" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
 
     <!-- Модальные окна -->
     <div id="createUserModal" class="modal">
