@@ -20,7 +20,7 @@
             --chat-msg-bg: #e3f2fd;
             --chat-own-msg-bg: #bbdefb;
             --profile-btn: #6c757d;
-            --modal-bg: rgba(0,0,0,0.5);
+            --modal-bg: rgba(0, 0, 0, 0.5);
         }
 
         .dark-theme {
@@ -38,7 +38,7 @@
             --chat-msg-bg: #3a3a4a;
             --chat-own-msg-bg: #4a4a5a;
             --profile-btn: #5a6268;
-            --modal-bg: rgba(0,0,0,0.7);
+            --modal-bg: rgba(0, 0, 0, 0.7);
         }
 
         body {
@@ -341,7 +341,7 @@
                 height: 35px;
                 font-size: 0.9em;
             }
-            
+
             .chat-messages {
                 max-height: 180px;
             }
@@ -426,29 +426,60 @@
     </div>
 
     <script>
-        // Данные пользователей
-        let users = {
-            "admin": {
-                password: "admin123",
-                isAdmin: true
-            },
-            "user": {
-                password: "user123",
-                isAdmin: false
-            }
-        };
+        // Base64 encoding
+        function base64Encode(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
 
-        // Загрузка пользователей из localStorage
+        // Base64 decoding
+        function base64Decode(str) {
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        // Данные пользователей
+        let users = {};
+
+        // Загрузка пользователей из localStorage и декодирование паролей
         function loadUsers() {
             const savedUsers = localStorage.getItem('mineTimerUsers');
             if (savedUsers) {
                 users = JSON.parse(savedUsers);
+                for (const user in users) {
+                    users[user].password = base64Decode(users[user].password);
+                }
             }
         }
 
-        // Сохранение пользователей в localStorage
+        // Сохранение пользователей в localStorage с кодированием паролей
         function saveUsers() {
-            localStorage.setItem('mineTimerUsers', JSON.stringify(users));
+            const usersCopy = JSON.parse(JSON.stringify(users));
+            for (const user in usersCopy) {
+                usersCopy[user].password = base64Encode(usersCopy[user].password);
+            }
+            localStorage.setItem('mineTimerUsers', JSON.stringify(usersCopy));
+        }
+
+        // Function to load initial users from the JSONP endpoint
+        function loadInitialUsers() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://<ваш-репозиторий>.github.io/users.json?callback=handleUsersData';
+                script.onload = () => {
+                    resolve();
+                };
+                script.onerror = () => {
+                    reject(new Error('Failed to load users data'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // Callback function to handle the JSONP response
+        function handleUsersData(data) {
+            for (const user in data) {
+                users[user] = data[user];
+            }
+            saveUsers(); // Save to localStorage with encoded passwords
         }
 
         // Текущий пользователь
@@ -477,7 +508,7 @@
         // Загрузка данных из localStorage
         function loadData() {
             loadUsers(); // Загружаем пользователей
-            
+
             const savedMines = localStorage.getItem('mineTimersData');
             const savedChat = localStorage.getItem('mineTimerChat');
 
@@ -498,7 +529,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (users[username] && users[username].password === password) {
+            if (users[username] && base64Decode(users[username].password) === password) {
                 currentUser = {
                     username: username,
                     isAdmin: users[username].isAdmin
@@ -685,7 +716,7 @@
             }
 
             users[username] = {
-                password: password,
+                password: base64Encode(password),
                 isAdmin: false
             };
 
@@ -727,11 +758,11 @@
         // Сохранить изменения таймеров
         function saveTimersChanges() {
             const inputs = document.querySelectorAll('#timersEditContainer input');
-            
+
             inputs.forEach(input => {
                 const mineName = input.dataset.name;
                 const newMax = parseInt(input.value);
-                
+
                 if (newMax > 0) {
                     mines[mineName].max = newMax;
                     // Сбросить текущее время до нового максимума
@@ -782,7 +813,8 @@
         }, 1000);
 
         // Инициализация при загрузке страницы
-        window.onload = function() {
+        window.onload = async function() {
+            await loadInitialUsers();
             loadData();
         };
     </script>
