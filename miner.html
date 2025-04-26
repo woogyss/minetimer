@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймеры шахт с чатом</title>
+    <style>
+        /* Оставляем твой CSS как есть */
+        /* Сюда вставим старые стили, если нужно */
+    </style>
+</head>
+<body>
+    <!-- Форма входа -->
+    <div class="login-form" id="loginForm">
+        <h1>Вход в систему</h1>
+        <input type="text" id="username" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button class="regular-btn" onclick="login()">Войти</button>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="main-container" id="mainContainer">
+        <button class="profile-btn" id="profileBtn">👤</button>
+        <div class="timers-section">
+            <div class="mine-timers" id="mineTimers">
+                <h1>Таймеры шахт</h1>
+                <div id="timersContainer"></div>
+            </div>
+        </div>
+        <div class="chat-section">
+            <div class="chat-container">
+                <h1>Чат</h1>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Сообщение...">
+                    <button class="send-btn regular-btn" onclick="sendMessage()">➤</button>
+                </div>
+                <button class="admin-btn" id="createUserBtn" onclick="showCreateUserModal()">Создать пользователя</button>
+                <button class="admin-btn" id="adminControlsBtn" onclick="showEditTimersModal()">Редактировать таймеры</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-container" id="profileContainer">
+        <button class="profile-btn" id="backBtn">←</button>
+        <div class="profile-content">
+            <h1>Профиль</h1>
+            <div class="profile-info" id="profileInfo"></div>
+            <button class="regular-btn" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="createUserModal">...</div>
+    <div class="modal" id="editTimersModal">...</div>
+
+    <script>
+        let users = {};
+        let currentUser = null;
+        let mines = {};
+        let chatMessages = [];
+
+        function base64encode(str) {
+            return btoa(str);
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('users.json');
+                users = await response.json();
+            } catch (err) {
+                alert("Не удалось загрузить пользователей");
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = base64encode(document.getElementById('password').value);
+
+            if (!users[username]) {
+                alert("Пользователь не найден");
+                return;
+            }
+
+            if (users[username].password === password) {
+                currentUser = {
+                    username: username,
+                    isAdmin: users[username].isAdmin
+                };
+
+                document.getElementById('profileBtn').textContent = username.charAt(0).toUpperCase();
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('mainContainer').classList.add('active-container');
+
+                if (currentUser.isAdmin) {
+                    document.getElementById('adminControlsBtn').style.display = 'block';
+                    document.getElementById('createUserBtn').style.display = 'block';
+                }
+
+                loadData();
+                updateTimers();
+                updateProfileInfo();
+                document.getElementById('chatInput').focus();
+            } else {
+                alert('Неверный логин или пароль!');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('mainContainer').classList.remove('active-container');
+            document.getElementById('profileContainer').classList.remove('active-container');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Здесь остаётся твой старый код updateTimers, sendMessage, updateChat, formatChatTime и т.д.
+
+        window.onload = async function() {
+            await loadUsers();
+            loadData();
+        };
+    </script>
+</body>
+</html>
